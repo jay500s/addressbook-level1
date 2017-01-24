@@ -132,6 +132,9 @@ public class AddressBook {
     private static final String COMMAND_EXIT_WORD = "exit";
     private static final String COMMAND_EXIT_DESC = "Exits the program.";
     private static final String COMMAND_EXIT_EXAMPLE = COMMAND_EXIT_WORD;
+    
+    private static final String COMMAND_SORT_WORD = "sort";
+    private static final String COMMAND_SORT_DESC = "Sorts Contacts Alphabetically.";
 
     private static final String DIVIDER = "===================================================";
 
@@ -394,6 +397,8 @@ public class AddressBook {
             return executeClearAddressBook();
         case COMMAND_HELP_WORD:
             return getUsageInfoForAllCommands();
+        case COMMAND_SORT_WORD:
+        	return executeSortPersons();
         case COMMAND_EXIT_WORD:
             executeExitProgramRequest();
         default:
@@ -401,7 +406,19 @@ public class AddressBook {
         }
     }
 
-    /**
+    private static String executeSortPersons() {
+//    	final Set<String> wordsInName = new HashSet<>();
+        final ArrayList<String[]> wordsInName = new ArrayList<>();
+    	for (String[] person : getAllPersonsInAddressBook()) {
+            wordsInName.add(person);
+            System.out.println(person);
+    	}
+    	showToUser(wordsInName);
+    	return getMessageForPersonsDisplayedSummary(wordsInName);
+//    	Collections.sort(wordsInName);
+   }
+
+	/**
      * Splits raw user input into command word and command arguments string
      *
      * @return  size 2 array; first element is the command type and second element is the arguments string
@@ -499,7 +516,15 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
+            final Set<String> lowercaseWordsInName = new HashSet<>();
+            final Set<String> lowercaseKeywords = new HashSet<>();
+            for (String s: wordsInName) {
+                lowercaseWordsInName.add(s.toLowerCase());
+        	}
+            for (String s: keywords) {
+                lowercaseKeywords.add(s.toLowerCase());
+        	}
+            if (!Collections.disjoint(lowercaseWordsInName, lowercaseKeywords)) {
                 matchedPersons.add(person);
             }
         }
